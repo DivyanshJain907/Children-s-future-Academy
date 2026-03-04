@@ -38,15 +38,30 @@ export default function AdminPage() {
     setLoading(true);
     setError('');
 
-    // Simple password check
-    if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD || password.length > 5) {
-      setIsAuthenticated(true);
-      sessionStorage.setItem('adminAuth', 'true');
-      sessionStorage.setItem('adminPassword', password);
-      fetchData();
-    } else {
-      setError('Invalid password');
+    try {
+      // Call server-side authentication API
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setIsAuthenticated(true);
+        sessionStorage.setItem('adminAuth', 'true');
+        sessionStorage.setItem('adminPassword', password);
+        fetchData();
+      } else {
+        setError(data.message || 'Invalid password');
+      }
+    } catch (error) {
+      setError('Authentication failed. Please try again.');
     }
+    
     setLoading(false);
   };
 

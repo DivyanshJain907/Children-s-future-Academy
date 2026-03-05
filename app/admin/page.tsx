@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import VisualPageEditor from '@/components/VisualPageEditor';
 
 export default function AdminPage() {
   const [password, setPassword] = useState('');
@@ -10,7 +11,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   
   // States for admin actions
-  const [activeTab, setActiveTab] = useState<'notices' | 'gallery' | 'admissions'>('notices');
+  const [activeTab, setActiveTab] = useState<'notices' | 'gallery' | 'admissions' | 'page-editor'>('notices');
   const [notices, setNotices] = useState<any[]>([]);
   const [galleryImages, setGalleryImages] = useState<any[]>([]);
   const [admissions, setAdmissions] = useState<any[]>([]);
@@ -320,6 +321,16 @@ export default function AdminPage() {
             >
               Admissions ({admissions.length})
             </button>
+            <button
+              onClick={() => setActiveTab('page-editor')}
+              className={`py-3 sm:py-4 px-3 sm:px-6 font-semibold transition border-b-4 text-sm sm:text-base whitespace-nowrap ${
+                activeTab === 'page-editor'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-gray-600 hover:text-primary'
+              }`}
+            >
+              Page Editor
+            </button>
           </div>
         </div>
       </div>
@@ -502,6 +513,17 @@ export default function AdminPage() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Page Editor Tab */}
+        {activeTab === 'page-editor' && (
+          <VisualPageEditor 
+            password={sessionStorage.getItem('adminPassword') || ''}
+            onSave={() => {
+              setActionMessage('Page updated successfully! Changes will reflect on the website.');
+              setTimeout(() => setActionMessage(''), 3000);
+            }}
+          />
         )}
       </div>
     </div>

@@ -7,6 +7,22 @@ import Testimonials from '@/components/Testimonials';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+async function getPageConfig() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/page-config?page=home`, {
+      cache: 'no-store',
+      next: { revalidate: 0 }
+    });
+    
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.success ? data.data : null;
+  } catch (error) {
+    console.error('Error fetching page config:', error);
+    return null;
+  }
+}
+
 async function getNotices() {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/notices`, {
@@ -40,19 +56,64 @@ async function getGalleryPreview() {
 }
 
 export default async function Home() {
+  const pageConfig = await getPageConfig();
   const notices = await getNotices();
   const galleryImages = await getGalleryPreview();
+
+  // Get sections from config or use defaults
+  const sections = pageConfig?.sections?.filter((s: any) => s.visible).sort((a: any, b: any) => a.order - b.order) || [];
+  
+  // Helper function to check if a section should be displayed
+  const shouldShowSection = (sectionId: string) => {
+    if (!pageConfig) return true; // Show all if no config
+    const section = sections.find((s: any) => s.id === sectionId);
+    return section !== undefined;
+  };
+
+  // Helper function to get section content
+  const getSectionContent = (sectionId: string, defaultContent: any) => {
+    if (!pageConfig) return defaultContent;
+    const section = sections.find((s: any) => s.id === sectionId);
+    return section?.content || defaultContent;
+  };
+
+  const heroContent = getSectionContent('hero', {
+    title: "Welcome to Children's Future Academy",
+    subtitle: "Nurturing young minds with quality education since 2000 - From Pre-Primary to Class VIII",
+    imageUrl: '/hero.png'
+  });
+
+  const aboutContent = getSectionContent('about', {
+    title: 'Quality Education in Moradabad',
+    subtitle: '1679 Students | 44 Teachers | Classes Pre-Primary to VIII',
+    description: 'Private Unaided Co-educational School located in Saraswati Vihar, Govind Nagar. Providing comprehensive education with modern facilities and dedicated faculty.',
+    images: [
+      'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800&h=800&fit=crop'
+    ]
+  });
+
+  const featuresContent = getSectionContent('features', {
+    title: 'Features & Facilities',
+    imageUrl: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=600&h=600&fit=crop',
+    items: []
+  });
 
   return (
     <div>
       {/* Hero Section */}
-      <Hero
-        title="Welcome to Children's Future Academy"
-        subtitle="Nurturing young minds with quality education since 2000 - From Pre-Primary to Class VIII"
-        backgroundImage="/hero.png"
-      />
+      {shouldShowSection('hero') && (
+        <Hero
+          title={heroContent.title}
+          subtitle={heroContent.subtitle}
+          backgroundImage={heroContent.imageUrl}
+        />
+      )}
 
-      {/* Featured Programs Section */}
+      {/* Featured Programs Section / About */}
+      {shouldShowSection('about') && (
       <section className="py-12 sm:py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
@@ -60,24 +121,24 @@ export default async function Home() {
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-3 sm:space-y-4">
                 <img 
-                  src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&h=800&fit=crop" 
+                  src={aboutContent.images?.[0] || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&h=800&fit=crop'} 
                   alt="Happy Students" 
                   className="w-full h-48 sm:h-56 md:h-64 object-cover rounded-lg shadow-lg"
                 />
                 <img 
-                  src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=800&h=800&fit=crop" 
+                  src={aboutContent.images?.[1] || 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=800&h=800&fit=crop'} 
                   alt="Student Learning" 
                   className="w-full h-48 sm:h-56 md:h-64 object-cover rounded-lg shadow-lg"
                 />
               </div>
               <div className="space-y-3 sm:space-y-4 mt-6 sm:mt-8">
                 <img 
-                  src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&h=800&fit=crop" 
+                  src={aboutContent.images?.[2] || 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&h=800&fit=crop'} 
                   alt="Students in Classroom" 
                   className="w-full h-48 sm:h-56 md:h-64 object-cover rounded-lg shadow-lg"
                 />
                 <img 
-                  src="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800&h=800&fit=crop" 
+                  src={aboutContent.images?.[3] || 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800&h=800&fit=crop'} 
                   alt="School Activities" 
                   className="w-full h-48 sm:h-56 md:h-64 object-cover rounded-lg shadow-lg"
                 />
@@ -90,14 +151,13 @@ export default async function Home() {
                 Established 2000
               </div>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
-                Quality Education in Moradabad
+                {aboutContent.title}
               </h2>
               <h3 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-primary mb-4 sm:mb-6">
-                1679 Students | 44 Teachers | Classes Pre-Primary to VIII
+                {aboutContent.subtitle}
               </h3>
               <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 leading-relaxed">
-                Private Unaided Co-educational School located in Saraswati Vihar, Govind Nagar. 
-                Providing comprehensive education with modern facilities and dedicated faculty.
+                {aboutContent.description}
               </p>
 
               <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
@@ -125,8 +185,10 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      )}
 
       {/* About School - Gurukul Pattern */}
+      {shouldShowSection('features') && (
       <section className="py-12 sm:py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
@@ -166,8 +228,10 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      )}
 
       {/* About Preview */}
+      {shouldShowSection('features') && (
       <section className="py-12 sm:py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 sm:mb-12">
@@ -201,8 +265,10 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Latest Notices */}
+      {shouldShowSection('notices') && (
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -248,9 +314,12 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Testimonials Section */}
+      {shouldShowSection('testimonials') && (
       <Testimonials />
+      )}
 
       {/* Achievements Section */}
       <section className="py-16 bg-white">
@@ -365,6 +434,7 @@ export default async function Home() {
       </section>
 
       {/* Gallery Preview */}
+      {shouldShowSection('gallery') && (
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -407,6 +477,7 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      )}
 
       {/* CTA Section */}
       <section className="py-16 bg-accent text-white">

@@ -114,6 +114,7 @@ export default function AdminPage() {
         setNoticeTitle('');
         setNoticeDescription('');
         fetchData();
+        router.refresh(); // Refresh other pages
       } else {
         setActionMessage('Error: ' + data.error);
       }
@@ -139,6 +140,7 @@ export default function AdminPage() {
       if (data.success) {
         setActionMessage('Notice deleted successfully!');
         fetchData();
+        router.refresh(); // Refresh other pages
       } else {
         setActionMessage('Error: ' + data.error);
       }
@@ -190,6 +192,7 @@ export default function AdminPage() {
           setImageFile(null);
           setImageCategory('other');
           fetchData();
+          router.refresh(); // Refresh other pages
         } else {
           setActionMessage('Error: ' + galleryData.error);
         }
@@ -218,6 +221,7 @@ export default function AdminPage() {
       if (data.success) {
         setActionMessage('Image deleted successfully!');
         fetchData();
+        router.refresh(); // Refresh other pages
       } else {
         setActionMessage('Error: ' + data.error);
       }

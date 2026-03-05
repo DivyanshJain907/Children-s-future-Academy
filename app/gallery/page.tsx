@@ -2,6 +2,9 @@ import Hero from '@/components/Hero';
 import SectionTitle from '@/components/SectionTitle';
 import Image from 'next/image';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata = {
   title: 'Gallery - Excellence School',
   description: 'View photos and memories from Excellence School events, activities, and daily life.',

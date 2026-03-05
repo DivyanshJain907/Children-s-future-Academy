@@ -4,6 +4,9 @@ import SectionTitle from '@/components/SectionTitle';
 import Card from '@/components/Card';
 import Testimonials from '@/components/Testimonials';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 async function getNotices() {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';

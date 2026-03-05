@@ -11,7 +11,7 @@ export default function Hero({
   subtitle, 
   backgroundImage,
   badge = "Quality Education Since 2000",
-  contact = "92866 01333"
+  contact = "95577 06427"
 }: HeroProps) {
   return (
     <div className="relative">

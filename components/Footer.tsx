@@ -19,12 +19,12 @@ export default function Footer() {
               <li className="flex items-center gap-2">
                 <span className="text-accent">📞</span>
                 <a 
-                  href="https://wa.me/919286601333?text=Hello%2C%20I%20would%20like%20to%20inquire%20about%20Children%27s%20Future%20Academy." 
+                  href="https://wa.me/919557706427?text=Hello%2C%20I%20would%20like%20to%20inquire%20about%20Children%27s%20Future%20Academy." 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="hover:text-green-400 transition flex items-center gap-2"
                 >
-                  <span>92866 01333</span>
+                  <span>95577 06427</span>
                   <span className="text-green-400">💬</span>
                 </a>
               </li>
@@ -184,6 +184,19 @@ export default function Footer() {
                 Contact Us
               </Link>
             </div>
+          </div>
+          <div className="text-center mt-4 text-gray-400 text-sm">
+            <p>
+              Developed by{' '}
+              <a 
+                href="https://divyanshjainportfolio.vercel.app/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-accent hover:text-white transition font-semibold"
+              >
+                Jain Agency
+              </a>
+            </p>
           </div>
         </div>
       </div>

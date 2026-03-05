@@ -84,12 +84,12 @@ export default function ContactPage() {
               <h3 className="text-xl font-bold text-gray-800 mb-3">Call Us</h3>
               <div className="text-gray-700">
                 <a 
-                  href="https://wa.me/919286601333?text=Hello%2C%20I%20would%20like%20to%20inquire%20about%20Children%27s%20Future%20Academy." 
+                  href="https://wa.me/919557706427?text=Hello%2C%20I%20would%20like%20to%20inquire%20about%20Children%27s%20Future%20Academy." 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 hover:text-green-600 transition font-semibold"
                 >
-                  <span>📱 92866 01333</span>
+                  <span>📱 95577 06427</span>
                   <span className="text-green-500">💬</span>
                 </a>
                 <p className="text-sm text-gray-500 mt-2">Click to chat on WhatsApp</p>
@@ -225,7 +225,7 @@ export default function ContactPage() {
           <div className="max-w-5xl mx-auto">
             <div className="bg-white p-4 rounded-lg shadow-lg">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.2412648750455!2d-73.98784368459395!3d40.74844097932847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus"
+                src="https://maps.google.com/maps?q=Saraswati+Vihar,+Govind+Nagar,+Moradabad,+Uttar+Pradesh+244001&output=embed"
                 width="100%"
                 height="450"
                 style={{ border: 0 }}
@@ -259,7 +259,7 @@ export default function ContactPage() {
               </div>
             </div>
             <p className="mt-6 text-center text-gray-600 italic">
-              For urgent matters outside office hours, please call our emergency number: 92866 01333
+              For urgent matters outside office hours, please call our emergency number: 95577 06427
             </p>
           </div>
         </div>

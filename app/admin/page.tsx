@@ -24,6 +24,16 @@ export default function AdminPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [actionMessage, setActionMessage] = useState('');
 
+  // Admission form states
+  const [admissionForm, setAdmissionForm] = useState({
+    studentName: '',
+    parentName: '',
+    phone: '',
+    email: '',
+    classApplied: '',
+    message: '',
+  });
+
   const router = useRouter();
 
   useEffect(() => {
@@ -147,6 +157,44 @@ export default function AdminPage() {
       }
     } catch (err) {
       setActionMessage('Failed to delete notice');
+    }
+  };
+
+  const handleAddAdmission = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setActionLoading(true);
+    setActionMessage('');
+
+    try {
+      const response = await fetch('/api/admissions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(admissionForm),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setActionMessage('✓ Admission added successfully!');
+        setAdmissionForm({
+          studentName: '',
+          parentName: '',
+          phone: '',
+          email: '',
+          classApplied: '',
+          message: '',
+        });
+        fetchData();
+        setTimeout(() => setActionMessage(''), 3000);
+      } else {
+        setActionMessage('✗ Failed to add admission: ' + data.error);
+      }
+    } catch (err) {
+      setActionMessage('✗ Error adding admission');
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -480,9 +528,92 @@ export default function AdminPage() {
 
         {/* Admissions Tab */}
         {activeTab === 'admissions' && (
-          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Admission Applications ({admissions.length})</h2>
-            <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <div className="space-y-6">
+            {/* Add Admission Form */}
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Add New Admission</h2>
+              
+              {actionMessage && (
+                <div className={`mb-4 p-3 rounded-lg text-sm ${actionMessage.startsWith('✓') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                  {actionMessage}
+                </div>
+              )}
+              
+              <form onSubmit={handleAddAdmission} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="Student Name *"
+                    value={admissionForm.studentName}
+                    onChange={(e) => setAdmissionForm({...admissionForm, studentName: e.target.value})}
+                    required
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Parent/Guardian Name *"
+                    value={admissionForm.parentName}
+                    onChange={(e) => setAdmissionForm({...admissionForm, parentName: e.target.value})}
+                    required
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email *"
+                    value={admissionForm.email}
+                    onChange={(e) => setAdmissionForm({...admissionForm, email: e.target.value})}
+                    required
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Phone *"
+                    value={admissionForm.phone}
+                    onChange={(e) => setAdmissionForm({...admissionForm, phone: e.target.value})}
+                    required
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                  />
+                  <select
+                    value={admissionForm.classApplied}
+                    onChange={(e) => setAdmissionForm({...admissionForm, classApplied: e.target.value})}
+                    required
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                  >
+                    <option value="">Select Class *</option>
+                    <option value="Pre-Primary">Pre-Primary</option>
+                    <option value="Class I">Class I</option>
+                    <option value="Class II">Class II</option>
+                    <option value="Class III">Class III</option>
+                    <option value="Class IV">Class IV</option>
+                    <option value="Class V">Class V</option>
+                    <option value="Class VI">Class VI</option>
+                    <option value="Class VII">Class VII</option>
+                    <option value="Class VIII">Class VIII</option>
+                  </select>
+                </div>
+                
+                <textarea
+                  placeholder="Message (optional)"
+                  value={admissionForm.message}
+                  onChange={(e) => setAdmissionForm({...admissionForm, message: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                  rows={3}
+                />
+                
+                <button
+                  type="submit"
+                  disabled={actionLoading}
+                  className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 transition font-semibold text-sm"
+                >
+                  {actionLoading ? 'Adding...' : '➕ Add Admission'}
+                </button>
+              </form>
+            </div>
+
+            {/* Admissions List */}
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Admission Applications ({admissions.length})</h2>
+              <div className="overflow-x-auto -mx-4 sm:mx-0">
               <div className="inline-block min-w-full align-middle">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-100">
@@ -511,6 +642,7 @@ export default function AdminPage() {
                   </tbody>
                 </table>
               </div>
+            </div>
             </div>
           </div>
         )}

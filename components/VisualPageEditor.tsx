@@ -32,6 +32,7 @@ export default function VisualPageEditor({ password, onSave }: VisualPageEditorP
       const res = await fetch('/api/page-config?page=home');
       const data = await res.json();
       if (data.success) {
+        console.log('Fetched sections:', data.data.sections);
         setSections(data.data.sections || []);
       }
     } catch (error) {
@@ -161,26 +162,6 @@ export default function VisualPageEditor({ password, onSave }: VisualPageEditorP
 
   return (
     <div className="space-y-6">
-      {/* Save Button & Messages */}
-      <div className="bg-white rounded-lg shadow-lg p-4">
-        <div className="flex justify-end items-center">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-400 transition font-semibold shadow-lg"
-          >
-            {saving ? 'Saving...' : 'Save Changes'}
-          </button>
-        </div>
-
-        {/* Message */}
-        {message && (
-          <div className={`mt-4 p-4 rounded-lg ${message.startsWith('✓') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-            {message}
-          </div>
-        )}
-      </div>
-
       {/* Visual Preview with Drag & Drop */}
       <div className="space-y-4">
         {sections.map((section, index) => (
@@ -253,6 +234,7 @@ export default function VisualPageEditor({ password, onSave }: VisualPageEditorP
 
 function getSectionIcon(type: string): string {
   const icons: { [key: string]: string } = {
+    branding: '🏢',
     hero: '🎯',
     about: 'ℹ️',
     features: '⭐',
@@ -272,6 +254,48 @@ function renderSectionPreview(
   const { id, type, content } = section;
 
   switch (type) {
+    case 'branding':
+      return (
+        <div className="space-y-4">
+          {/* Logo Preview */}
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Logo</label>
+            <div className="relative group inline-block">
+              <img 
+                src={content.logoUrl || '/cfa-logo.png'} 
+                alt="Logo"
+                className="h-16 object-contain bg-white p-2 rounded-lg shadow-md"
+              />
+              <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition cursor-pointer flex items-center justify-center rounded-lg flex-col gap-2">
+                <span className="text-white font-semibold bg-primary px-3 py-1 rounded text-sm">
+                  📸 Upload Logo
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleImageUpload(id, 'logoUrl', file);
+                  }}
+                />
+              </label>
+              {uploadingImage === `${id}-logoUrl` && (
+                <div className="absolute inset-0 bg-black/70 flex items-center justify-center rounded-lg">
+                  <div className="text-white text-sm">Uploading...</div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <EditableField
+            label="Site Name"
+            value={content.siteName || "Children's Future Academy"}
+            onChange={(val) => updateContent(id, 'siteName', val)}
+          />
+        </div>
+      );
+
     case 'hero':
       return (
         <div className="space-y-4">
@@ -386,6 +410,50 @@ function renderSectionPreview(
       );
 
     case 'features':
+      return (
+        <div className="space-y-4">
+          {/* Features Image */}
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Section Image</label>
+            <div className="relative group">
+              <img 
+                src={content.imageUrl || 'https://via.placeholder.com/600x600?text=Features+Image'} 
+                alt="Features"
+                className="w-full h-48 object-cover rounded-lg shadow-md"
+              />
+              <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition cursor-pointer flex items-center justify-center rounded-lg">
+                <span className="text-white font-semibold bg-primary px-4 py-2 rounded-lg">
+                  📸 Change Image
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleImageUpload(id, 'imageUrl', file);
+                  }}
+                />
+              </label>
+              {uploadingImage === `${id}-imageUrl` && (
+                <div className="absolute inset-0 bg-black/70 flex items-center justify-center rounded-lg">
+                  <div className="text-white text-sm">Uploading...</div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <EditableField
+            label="Section Title"
+            value={content.title || ''}
+            onChange={(val) => updateContent(id, 'title', val)}
+          />
+          <p className="text-sm text-gray-500 italic">
+            Features items are predefined in the configuration
+          </p>
+        </div>
+      );
+
     case 'notices':
     case 'gallery':
     case 'testimonials':
@@ -400,7 +468,6 @@ function renderSectionPreview(
             {type === 'notices' && 'Notices are managed in the Notices tab'}
             {type === 'gallery' && 'Gallery images are managed in the Gallery tab'}
             {type === 'testimonials' && 'Testimonials content is fixed'}
-            {type === 'features' && 'Features content can be customized'}
           </p>
         </div>
       );

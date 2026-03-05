@@ -2,9 +2,31 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [logoUrl, setLogoUrl] = useState('/cfa-logo.png');
+
+  useEffect(() => {
+    // Fetch logo from page config
+    const fetchLogo = async () => {
+      try {
+        const res = await fetch('/api/page-config?page=home');
+        const data = await res.json();
+        if (data.success && data.data?.sections) {
+          const brandingSection = data.data.sections.find((s: any) => s.type === 'branding');
+          if (brandingSection?.content?.logoUrl) {
+            setLogoUrl(brandingSection.content.logoUrl);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch logo:', error);
+      }
+    };
+
+    fetchLogo();
+  }, []);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -24,7 +46,19 @@ export default function Navbar() {
     <>
       <nav className="bg-primary text-white shadow-lg sticky top-0 z-50">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center py-3">
+          <div className="flex justify-between items-center py-2 lg:py-3">
+            {/* Logo - Left side */}
+            <Link href="/" className="hidden lg:block flex-shrink-0 mr-4">
+              <img 
+                src={logoUrl} 
+                alt="Logo" 
+                className="h-12 object-contain"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            </Link>
+
             {/* Online Registration Button - Only visible on mobile */}
             <Link 
               href="/admissions" 
@@ -34,7 +68,7 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Menu */}
-            <div className="hidden lg:flex space-x-4 xl:space-x-8 text-xs xl:text-sm font-semibold flex-1 justify-center">
+            <div className="hidden lg:flex space-x-4 xl:space-x-6 text-xs xl:text-sm font-semibold flex-1 justify-center">
               <Link href="/" className="hover:text-gray-200 transition uppercase tracking-wide">
                 Home
               </Link>
@@ -96,6 +130,19 @@ export default function Navbar() {
         }`}
       >
         <div className="flex flex-col h-full">
+          {/* Logo Section in Mobile */}
+          <div className="px-6 py-4 border-b border-gray-200 flex items-center">
+            <img 
+              src={logoUrl} 
+              alt="Logo" 
+              className="h-10 object-contain mr-3"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
+            <span className="text-sm font-bold text-gray-800">CFA</span>
+          </div>
+
           {/* Close button */}
           <button
             onClick={toggleMenu}
@@ -106,7 +153,7 @@ export default function Navbar() {
           </button>
 
           {/* Menu Items */}
-          <div className="flex-1 pt-16 overflow-y-auto">
+          <div className="flex-1 pt-8 overflow-y-auto">
             <Link
               href="/"
               className="flex items-center justify-between px-6 py-4 text-gray-800 hover:bg-gray-100 border-b border-gray-200 font-semibold uppercase text-sm"

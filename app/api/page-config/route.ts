@@ -11,18 +11,34 @@ export async function GET(request: NextRequest) {
     await connectDB();
     let config = await PageConfig.findOne({ pageName });
 
-    // If no config exists, return default structure
+    // Get default sections
+    const defaultSections = getDefaultSections();
+
+    // If no config exists, create one with all defaults
     if (!config) {
       return NextResponse.json({ 
         success: true, 
         data: {
           pageName,
-          sections: getDefaultSections(),
+          sections: defaultSections,
         }
       }, { status: 200 });
     }
 
-    return NextResponse.json({ success: true, data: config }, { status: 200 });
+    // Ensure all default sections exist in the saved config
+    const savedSections = config.sections || [];
+    const savedSectionIds = new Set(savedSections.map(s => s.id));
+    
+    // Keep saved sections and add missing default sections
+    const mergedSections = [
+      ...defaultSections.filter(d => !savedSectionIds.has(d.id)),
+      ...savedSections
+    ].sort((a, b) => a.order - b.order);
+
+    return NextResponse.json({ 
+      success: true, 
+      data: { ...config.toObject(), sections: mergedSections } 
+    }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message },
@@ -66,6 +82,16 @@ export async function POST(request: NextRequest) {
 
 function getDefaultSections() {
   return [
+    {
+      id: 'branding',
+      type: 'branding',
+      visible: true,
+      order: 0,
+      content: {
+        logoUrl: '/cfa-logo.png',
+        siteName: "Children's Future Academy"
+      }
+    },
     {
       id: 'hero',
       type: 'hero',

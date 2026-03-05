@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import connectDB from '@/lib/mongodb';
 import Notice from '@/models/Notice';
 
@@ -37,6 +38,10 @@ export async function POST(request: NextRequest) {
 
     await connectDB();
     const notice = await Notice.create({ title, description });
+    
+    // Revalidate pages that display notices
+    revalidatePath('/');
+    revalidatePath('/admin');
     
     return NextResponse.json({ success: true, data: notice }, { status: 201 });
   } catch (error: any) {

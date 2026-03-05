@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import connectDB from '@/lib/mongodb';
 import Notice from '@/models/Notice';
 
@@ -26,6 +27,10 @@ export async function DELETE(
         { status: 404 }
       );
     }
+    
+    // Revalidate pages that display notices
+    revalidatePath('/');
+    revalidatePath('/admin');
     
     return NextResponse.json({ success: true, data: {} }, { status: 200 });
   } catch (error: any) {

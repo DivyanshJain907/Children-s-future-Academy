@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import connectDB from '@/lib/mongodb';
 import Gallery from '@/models/Gallery';
 
@@ -37,6 +38,11 @@ export async function POST(request: NextRequest) {
 
     await connectDB();
     const galleryItem = await Gallery.create({ imageUrl, category: category || 'other' });
+    
+    // Revalidate pages that display gallery
+    revalidatePath('/');
+    revalidatePath('/gallery');
+    revalidatePath('/admin');
     
     return NextResponse.json({ success: true, data: galleryItem }, { status: 201 });
   } catch (error: any) {

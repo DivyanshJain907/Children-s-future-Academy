@@ -12,9 +12,9 @@ export const metadata = {
 
 async function getGallery() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const res = await fetch(`${baseUrl}/api/gallery`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/gallery`, {
       cache: 'no-store',
+      next: { revalidate: 0 }
     });
     
     if (!res.ok) return [];

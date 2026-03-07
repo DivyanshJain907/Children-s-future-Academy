@@ -11,10 +11,11 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   
   // States for admin actions
-  const [activeTab, setActiveTab] = useState<'notices' | 'gallery' | 'admissions' | 'page-editor'>('notices');
+  const [activeTab, setActiveTab] = useState<'notices' | 'gallery' | 'admissions' | 'events' | 'page-editor'>('notices');
   const [notices, setNotices] = useState<any[]>([]);
   const [galleryImages, setGalleryImages] = useState<any[]>([]);
   const [admissions, setAdmissions] = useState<any[]>([]);
+  const [events, setEvents] = useState<any[]>([]);
   
   // Form states
   const [noticeTitle, setNoticeTitle] = useState('');
@@ -33,6 +34,16 @@ export default function AdminPage() {
     classApplied: '',
     message: '',
   });
+
+  // Event form states
+  const [eventForm, setEventForm] = useState({
+    title: '',
+    description: '',
+    date: '',
+    icon: '📅',
+    color: 'primary',
+  });
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -100,6 +111,11 @@ export default function AdminPage() {
     const admissionsRes = await fetch(`/api/admissions?password=${pwd}`);
     const admissionsData = await admissionsRes.json();
     if (admissionsData.success) setAdmissions(admissionsData.data);
+
+    // Fetch events
+    const eventsRes = await fetch('/api/events');
+    const eventsData = await eventsRes.json();
+    if (eventsData.success) setEvents(eventsData.data);
   };
 
   const handleAddNotice = async (e: React.FormEvent) => {
@@ -279,6 +295,81 @@ export default function AdminPage() {
     }
   };
 
+  // Event handlers
+  const handleAddOrUpdateEvent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setActionLoading(true);
+    setActionMessage('');
+
+    try {
+      const pwd = sessionStorage.getItem('adminPassword');
+      const url = editingEventId ? `/api/events/${editingEventId}` : '/api/events';
+      const method = editingEventId ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...eventForm, password: pwd }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setActionMessage(editingEventId ? 'Event updated successfully!' : 'Event added successfully!');
+        setEventForm({ title: '', description: '', date: '', icon: '📅', color: 'primary' });
+        setEditingEventId(null);
+        fetchData();
+        router.refresh();
+      } else {
+        setActionMessage('Error: ' + data.error);
+      }
+    } catch (err) {
+      setActionMessage('Failed to save event');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleEditEvent = (event: any) => {
+    setEventForm({
+      title: event.title,
+      description: event.description,
+      date: event.date,
+      icon: event.icon,
+      color: event.color,
+    });
+    setEditingEventId(event._id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteEvent = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this event?')) return;
+
+    try {
+      const pwd = sessionStorage.getItem('adminPassword');
+      const res = await fetch(`/api/events/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pwd }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setActionMessage('Event deleted successfully!');
+        fetchData();
+        router.refresh();
+      } else {
+        setActionMessage('Error: ' + data.error);
+      }
+    } catch (err) {
+      setActionMessage('Failed to delete event');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEventForm({ title: '', description: '', date: '', icon: '📅', color: 'primary' });
+    setEditingEventId(null);
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary to-secondary flex items-center justify-center px-4">
@@ -368,6 +459,16 @@ export default function AdminPage() {
               }`}
             >
               Admissions ({admissions.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('events')}
+              className={`py-3 sm:py-4 px-3 sm:px-6 font-semibold transition border-b-4 text-sm sm:text-base whitespace-nowrap ${
+                activeTab === 'events'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-gray-600 hover:text-primary'
+              }`}
+            >
+              Events
             </button>
             <button
               onClick={() => setActiveTab('page-editor')}
@@ -643,6 +744,147 @@ export default function AdminPage() {
                 </table>
               </div>
             </div>
+            </div>
+          </div>
+        )}
+
+        {/* Events Tab */}
+        {activeTab === 'events' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Add/Edit Event Form */}
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold mb-6 text-gray-800">
+                {editingEventId ? 'Edit Event' : 'Add New Event'}
+              </h2>
+              <form onSubmit={handleAddOrUpdateEvent} className="bg-white p-6 rounded-lg shadow-md">
+                <div className="mb-4">
+                  <label className="block text-gray-700 font-semibold mb-2">Title *</label>
+                  <input
+                    type="text"
+                    value={eventForm.title}
+                    onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="Sports Day"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 font-semibold mb-2">Description *</label>
+                  <textarea
+                    value={eventForm.description}
+                    onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
+                    required
+                    rows={3}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="Races, relay events, and prizes for winners..."
+                  ></textarea>
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 font-semibold mb-2">Date *</label>
+                  <input
+                    type="text"
+                    value={eventForm.date}
+                    onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="March 15, 2026"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 font-semibold mb-2">Icon (Emoji)</label>
+                  <input
+                    type="text"
+                    value={eventForm.icon}
+                    onChange={(e) => setEventForm({ ...eventForm, icon: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="🏃 📚 🎨"
+                  />
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-gray-700 font-semibold mb-2">Color Theme *</label>
+                  <select
+                    value={eventForm.color}
+                    onChange={(e) => setEventForm({ ...eventForm, color: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="primary">Green (Primary)</option>
+                    <option value="accent">Orange (Accent)</option>
+                    <option value="blue">Blue</option>
+                  </select>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    disabled={actionLoading}
+                    className="flex-1 bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary transition disabled:opacity-50"
+                  >
+                    {actionLoading ? 'Saving...' : editingEventId ? 'Update Event' : 'Add Event'}
+                  </button>
+                  {editingEventId && (
+                    <button
+                      type="button"
+                      onClick={handleCancelEdit}
+                      className="px-6 py-3 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
+
+            {/* Events List */}
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold mb-6 text-gray-800">
+                Current Events ({events.length})
+              </h2>
+              <div className="space-y-4">
+                {events.map((event) => (
+                  <div key={event._id} className="bg-white p-6 rounded-lg shadow-md border-l-4 border-primary">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-3xl">{event.icon}</span>
+                        <div>
+                          <h3 className="font-bold text-lg text-gray-900">{event.title}</h3>
+                          <p className="text-sm text-accent font-semibold">{event.date}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEditEvent(event)}
+                          className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-sm"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteEvent(event._id)}
+                          className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition text-sm"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-gray-600 text-sm mb-2">{event.description}</p>
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                      event.color === 'primary' ? 'bg-green-100 text-green-800' :
+                      event.color === 'accent' ? 'bg-orange-100 text-orange-800' :
+                      'bg-blue-100 text-blue-800'
+                    }`}>
+                      {event.color === 'primary' ? 'Green Theme' : event.color === 'accent' ? 'Orange Theme' : 'Blue Theme'}
+                    </span>
+                  </div>
+                ))}
+                {events.length === 0 && (
+                  <div className="bg-gray-50 p-8 rounded-lg text-center">
+                    <p className="text-gray-500">No events yet. Add your first event!</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

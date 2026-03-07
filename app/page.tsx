@@ -5,6 +5,7 @@ import Card from '@/components/Card';
 import Testimonials from '@/components/Testimonials';
 import WhyChooseUs from '@/components/WhyChooseUs';
 import InteractiveBentoGallery from '@/components/ui/interactive-bento-gallery';
+import { Meteors } from '@/components/ui/meteors';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -57,6 +58,22 @@ async function getGalleryPreview() {
   }
 }
 
+async function getEvents() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/events`, {
+      cache: 'no-store',
+      next: { revalidate: 0 }
+    });
+    
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.success ? data.data : [];
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return [];
+  }
+}
+
 // Transform gallery images to MediaItem format for bento gallery
 function transformToMediaItems(images: any[]) {
   const spanPatterns = [
@@ -100,6 +117,38 @@ export default async function Home() {
   const pageConfig = await getPageConfig();
   const notices = await getNotices();
   const galleryImages = await getGalleryPreview();
+  const events = await getEvents();
+
+  // Default events if database is empty
+  const defaultEvents = [
+    {
+      _id: 'default-1',
+      title: 'Sports Day',
+      description: 'Races, relay events, and prizes for winners. Parents welcome to watch!',
+      date: 'March 15, 2026',
+      icon: '🏃',
+      color: 'primary',
+    },
+    {
+      _id: 'default-2',
+      title: 'Annual Day Program',
+      description: 'Students will perform dance, drama, and songs. Don\'t miss it!',
+      date: 'March 25, 2026',
+      icon: '🎨',
+      color: 'accent',
+    },
+    {
+      _id: 'default-3',
+      title: 'Parent-Teacher Meet',
+      description: 'Discuss your child\'s progress and exam preparation with teachers.',
+      date: 'April 5, 2026',
+      icon: '📚',
+      color: 'blue',
+    },
+  ];
+
+  // Use database events if available, otherwise use defaults
+  const displayEvents = events.length > 0 ? events : defaultEvents;
 
   // Get sections from config or use defaults
   const sections = pageConfig?.sections?.filter((s: any) => s.visible).sort((a: any, b: any) => a.order - b.order) || [];
@@ -290,9 +339,9 @@ export default async function Home() {
               notices.slice(0, 5).map((notice: any) => (
                 <div
                   key={notice._id}
-                  className="bg-white p-6 rounded-lg shadow-md border-l-4 border-primary hover:shadow-xl transition transform hover:-translate-y-1"
+                  className="relative bg-white p-6 rounded-lg shadow-md border-l-4 border-primary hover:shadow-xl transition transform hover:-translate-y-1 overflow-hidden"
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between relative z-10">
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-gray-800 mb-2">
                         {notice.title}
@@ -311,6 +360,7 @@ export default async function Home() {
                       <span className="text-2xl">📢</span>
                     </div>
                   </div>
+                  <Meteors number={12} />
                 </div>
               ))
             ) : (
@@ -413,32 +463,68 @@ export default async function Home() {
       </section>
 
       {/* Events Preview */}
-      <section className="py-16 bg-gradient-to-r from-primary to-secondary text-white">
+      <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-2">What's Happening at School</h2>
-            <div className="w-24 h-1 bg-white mx-auto"></div>
+            <h2 className="text-4xl font-bold mb-4 text-gray-900">What's Happening at School</h2>
+            <div className="w-24 h-1 bg-accent mx-auto"></div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg hover:bg-white/20 transition">
-              <div className="text-4xl mb-4">🏃</div>
-              <h3 className="text-2xl font-bold mb-2">Sports Day</h3>
-              <p className="mb-2">Races, relay events, and prizes for winners. Parents welcome to watch!</p>
-              <p className="text-sm text-gray-200">March 15, 2026</p>
+          {displayEvents.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {displayEvents.map((event: any) => {
+                // Color mapping for each event
+                const colorMap: Record<string, any> = {
+                  primary: {
+                    border: 'border-b-primary',
+                    shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.1),0_2px_10px_rgba(13,122,46,0.4)]',
+                    gradient: 'from-primary to-secondary',
+                    bgGradient: 'from-primary/10',
+                  },
+                  accent: {
+                    border: 'border-b-accent',
+                    shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.1),0_2px_10px_rgba(255,107,53,0.4)]',
+                    gradient: 'from-accent to-orange-600',
+                    bgGradient: 'from-accent/10',
+                  },
+                  blue: {
+                    border: 'border-b-blue-500',
+                    shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.1),0_2px_10px_rgba(59,130,246,0.4)]',
+                    gradient: 'from-blue-500 to-blue-700',
+                    bgGradient: 'from-blue-500/10',
+                  },
+                };
+
+                const colors = colorMap[event.color] || colorMap.primary;
+
+                return (
+                  <div
+                    key={event._id}
+                    className={`group relative bg-white p-8 rounded-2xl hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden border-b-4 ${colors.border} ${colors.shadow}`}
+                  >
+                    <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${colors.bgGradient} to-transparent rounded-bl-full`} />
+                    <div className="relative z-10">
+                      <div className={`w-16 h-16 bg-gradient-to-br ${colors.gradient} rounded-xl flex items-center justify-center mb-4 text-3xl shadow-md`}>
+                        {event.icon}
+                      </div>
+                      <h3 className="text-2xl font-bold mb-3 text-gray-900">{event.title}</h3>
+                      <p className="text-gray-600 mb-4 leading-relaxed">{event.description}</p>
+                      <div className="flex items-center text-sm text-accent font-semibold">
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {event.date}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg hover:bg-white/20 transition">
-              <div className="text-4xl mb-4">🎨</div>
-              <h3 className="text-2xl font-bold mb-2">Annual Day Program</h3>
-              <p className="mb-2">Students will perform dance, drama, and songs. Don't miss it!</p>
-              <p className="text-sm text-gray-200">March 25, 2026</p>
+          ) : (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">📅</div>
+              <p className="text-gray-500 text-lg">No upcoming events. Check back soon!</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg hover:bg-white/20 transition">
-              <div className="text-4xl mb-4">📚</div>
-              <h3 className="text-2xl font-bold mb-2">Parent-Teacher Meet</h3>
-              <p className="mb-2">Discuss your child's progress and exam preparation with teachers.</p>
-              <p className="text-sm text-gray-200">April 5, 2026</p>
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -475,18 +561,80 @@ export default async function Home() {
       )}
 
       {/* CTA Section */}
-      <section className="py-16 bg-accent text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4">Ready to Join Our School?</h2>
-          <p className="text-xl mb-8">
-            Start your journey towards excellence today!
-          </p>
-          <Link
-            href="/admissions"
-            className="inline-block bg-white text-accent px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition"
-          >
-            Apply Now
-          </Link>
+      <section className="relative py-12 bg-gradient-to-br from-primary via-secondary to-primary overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-48 h-48 bg-white rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-10 w-64 h-64 bg-accent rounded-full blur-3xl"></div>
+        </div>
+        
+        {/* Content */}
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center">
+            {/* Icon Badge */}
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl mb-4 border border-white/30">
+              <span className="text-2xl">🎓</span>
+            </div>
+            
+            {/* Heading */}
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3 leading-tight">
+              Ready to Join Our School?
+            </h2>
+            <p className="text-lg md:text-xl text-white/90 mb-6">
+              Start your journey towards excellence today!
+            </p>
+            
+            {/* Features Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-4 hover:bg-white/20 transition">
+                <div className="text-2xl mb-2">👨‍🏫</div>
+                <h3 className="text-sm font-bold text-white mb-1">Expert Teachers</h3>
+                <p className="text-white/80 text-xs">Qualified educators</p>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-4 hover:bg-white/20 transition">
+                <div className="text-2xl mb-2">🏆</div>
+                <h3 className="text-sm font-bold text-white mb-1">Excellence</h3>
+                <p className="text-white/80 text-xs">25+ years experience</p>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-4 hover:bg-white/20 transition">
+                <div className="text-2xl mb-2">🌟</div>
+                <h3 className="text-sm font-bold text-white mb-1">Holistic Growth</h3>
+                <p className="text-white/80 text-xs">Complete development</p>
+              </div>
+            </div>
+            
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+              <Link
+                href="/admissions"
+                className="group relative inline-flex items-center gap-2 bg-white text-primary px-6 py-3 rounded-lg font-bold hover:bg-gray-50 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+              >
+                <span>Apply Now</span>
+                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </Link>
+              
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 bg-transparent text-white px-6 py-3 rounded-lg font-bold border-2 border-white/50 hover:bg-white/10 hover:border-white transition-all"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                <span>Contact Us</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+        
+        {/* Decorative Elements */}
+        <div className="absolute -bottom-1 left-0 right-0">
+          <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+            <path d="M0 0L60 8C120 16 240 32 360 37.3C480 43 600 37 720 34.7C840 32 960 32 1080 37.3C1200 43 1320 53 1380 58.7L1440 64V80H1380C1320 80 1200 80 1080 80C960 80 840 80 720 80C600 80 480 80 360 80C240 80 120 80 60 80H0V0Z" fill="white"/>
+          </svg>
         </div>
       </section>
     </div>

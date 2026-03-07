@@ -3,6 +3,7 @@ import Hero from '@/components/Hero';
 import SectionTitle from '@/components/SectionTitle';
 import Card from '@/components/Card';
 import Testimonials from '@/components/Testimonials';
+import WhyChooseUs from '@/components/WhyChooseUs';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -232,39 +233,7 @@ export default async function Home() {
 
       {/* About Preview */}
       {shouldShowSection('features') && (
-      <section className="py-12 sm:py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">Why Parents Choose Us</h2>
-            <div className="w-20 sm:w-24 h-1 bg-accent mx-auto mt-4"></div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card
-              icon="👨‍🏫"
-              title="Experienced Teachers"
-              description="Our 44 qualified teachers know each student by name. Small class sizes mean your child gets the attention they need to succeed."
-            />
-            <Card
-              icon="📖"
-              title="Complete Education"
-              description="From Pre-Primary to Class VIII, we cover everything - academics, sports, computer skills, and personality development all under one roof."
-            />
-            <Card
-              icon="💯"
-              title="Proven Track Record"
-              description="Serving Moradabad families since 2000. Our students consistently perform well in exams and go on to top high schools."
-            />
-          </div>
-          <div className="text-center mt-8">
-            <Link
-              href="/about"
-              className="inline-block bg-primary text-white px-8 py-3 rounded-lg hover:bg-secondary transition shadow-md hover:shadow-lg font-semibold"
-            >
-              Learn More About Us →
-            </Link>
-          </div>
-        </div>
-      </section>
+        <WhyChooseUs />
       )}
 
       {/* Latest Notices */}

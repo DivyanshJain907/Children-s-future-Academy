@@ -13,7 +13,30 @@ const config: Config = {
         secondary: '#0a5f24',
         accent: '#ff6b35', // Orange accent
         dark: '#1a1a2e',
+        border: "hsl(var(--border))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
       },
+      maxWidth: {
+        container: "1280px",
+      },
+      animation: {
+        marquee: 'marquee var(--duration) linear infinite',
+      },
+      keyframes: {
+        marquee: {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(calc(-100% - var(--gap)))' }
+        }
+      }
     },
   },
   plugins: [],

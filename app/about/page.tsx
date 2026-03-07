@@ -1,19 +1,39 @@
-import Hero from '@/components/Hero';
+'use client';
+
+import { motion } from 'framer-motion';
+import { LampContainer } from '@/components/ui/lamp';
 import SectionTitle from '@/components/SectionTitle';
 import Card from '@/components/Card';
-
-export const metadata = {
-  title: 'About Us - Children\'s Future Academy',
-  description: 'Learn about Children\'s Future Academy - A Co-educational school in Moradabad providing quality education since 2000.',
-};
 
 export default function AboutPage() {
   return (
     <div>
-      <Hero
-        title="About Children's Future Academy"
-        subtitle="Providing Quality Education in Moradabad since 2000"
-      />
+      <LampContainer>
+        <motion.h1
+          initial={{ opacity: 0.5, y: 100 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.3,
+            duration: 0.8,
+            ease: "easeInOut",
+          }}
+          className="mt-8 bg-gradient-to-br from-slate-300 to-slate-500 py-4 bg-clip-text text-center text-4xl font-medium tracking-tight text-transparent md:text-7xl"
+        >
+          About Children&apos;s Future Academy
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0.5, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.5,
+            duration: 0.8,
+            ease: "easeInOut",
+          }}
+          className="mt-4 text-slate-300 text-center text-lg md:text-xl max-w-2xl"
+        >
+          Providing Quality Education in Moradabad since 2000
+        </motion.p>
+      </LampContainer>
 
       {/* Vision & Mission */}
       <section className="py-16 bg-gray-50">

@@ -10,9 +10,13 @@
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.11",
+    "@radix-ui/react-slot": "^1.2.4",
     "bcryptjs": "^2.4.3",
+    "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.0.0",
     "clsx": "^2.1.1",
+    "framer-motion": "^12.35.0",
+    "lucide-react": "^0.577.0",
     "mongoose": "^8.0.3",
     "next": "14.1.0",
     "next-auth": "^4.24.5",

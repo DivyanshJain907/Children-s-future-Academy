@@ -4,6 +4,7 @@ import SectionTitle from '@/components/SectionTitle';
 import Card from '@/components/Card';
 import Testimonials from '@/components/Testimonials';
 import WhyChooseUs from '@/components/WhyChooseUs';
+import InteractiveBentoGallery from '@/components/ui/interactive-bento-gallery';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -49,11 +50,50 @@ async function getGalleryPreview() {
     
     if (!res.ok) return [];
     const data = await res.json();
-    return data.success ? data.data.slice(0, 6) : [];
+    return data.success ? data.data.slice(0, 8) : [];
   } catch (error) {
     console.error('Error fetching gallery:', error);
     return [];
   }
+}
+
+// Transform gallery images to MediaItem format for bento gallery
+function transformToMediaItems(images: any[]) {
+  const spanPatterns = [
+    "md:col-span-1 md:row-span-3 sm:col-span-1 sm:row-span-2",
+    "md:col-span-2 md:row-span-2 col-span-1 sm:col-span-2 sm:row-span-2",
+    "md:col-span-1 md:row-span-3 sm:col-span-2 sm:row-span-2",
+    "md:col-span-2 md:row-span-2 sm:col-span-1 sm:row-span-2",
+    "md:col-span-1 md:row-span-3 sm:col-span-1 sm:row-span-2",
+    "md:col-span-2 md:row-span-2 sm:col-span-1 sm:row-span-2",
+    "md:col-span-1 md:row-span-3 sm:col-span-1 sm:row-span-2",
+    "md:col-span-2 md:row-span-2 sm:col-span-1 sm:row-span-2",
+  ];
+
+  const categoryTitles: Record<string, string> = {
+    events: 'School Events',
+    infrastructure: 'Our Campus',
+    activities: 'Student Activities',
+    achievements: 'Achievements',
+    other: 'School Life',
+  };
+
+  const categoryDescriptions: Record<string, string> = {
+    events: 'Celebrating special moments',
+    infrastructure: 'Modern facilities',
+    activities: 'Engaging learning experiences',
+    achievements: 'Student accomplishments',
+    other: 'Daily life at school',
+  };
+
+  return images.map((image: any, index: number) => ({
+    id: index + 1,
+    type: 'image',
+    title: categoryTitles[image.category] || 'School Life',
+    desc: categoryDescriptions[image.category] || "Children's Future Academy",
+    url: image.imageUrl,
+    span: spanPatterns[index % spanPatterns.length],
+  }));
 }
 
 export default async function Home() {
@@ -404,46 +444,32 @@ export default async function Home() {
 
       {/* Gallery Preview */}
       {shouldShowSection('gallery') && (
-      <section className="py-16 bg-gray-50">
+      <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-2">Gallery</h2>
-            <p className="text-gray-600 text-lg">Glimpses of life at Excellence School</p>
-            <div className="w-24 h-1 bg-accent mx-auto mt-4"></div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {galleryImages.length > 0 ? (
-              galleryImages.map((image: any) => (
-                <div
-                  key={image._id}
-                  className="relative overflow-hidden rounded-lg shadow-lg group h-64"
+          {galleryImages.length > 0 ? (
+            <>
+              <InteractiveBentoGallery
+                mediaItems={transformToMediaItems(galleryImages)}
+                title="Gallery"
+                description="Glimpses of life at Children's Future Academy"
+              />
+              <div className="text-center mt-8">
+                <Link
+                  href="/gallery"
+                  className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-secondary transition shadow-md hover:shadow-lg"
                 >
-                  <img
-                    src={image.imageUrl}
-                    alt="Gallery"
-                    className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition flex items-end">
-                    <p className="text-white p-4 font-semibold">View Image</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="col-span-2 md:col-span-3 text-center bg-white p-12 rounded-lg shadow-md">
-                <div className="text-6xl mb-4">📸</div>
-                <p className="text-gray-600 text-lg">No images available yet.</p>
-                <p className="text-gray-500 text-sm mt-2">Check back soon for amazing photos!</p>
+                  View Full Gallery →
+                </Link>
               </div>
-            )}
-          </div>
-          <div className="text-center mt-8">
-            <Link
-              href="/gallery"
-              className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-secondary transition shadow-md hover:shadow-lg"
-            >
-              View Full Gallery →
-            </Link>
-          </div>
+            </>
+          ) : (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">📸</div>
+              <h2 className="text-3xl font-bold text-gray-800 mb-2">Gallery</h2>
+              <p className="text-gray-600 text-lg mb-4">Glimpses of life at Children's Future Academy</p>
+              <p className="text-gray-500">No images available yet. Check back soon for amazing photos!</p>
+            </div>
+          )}
         </div>
       </section>
       )}

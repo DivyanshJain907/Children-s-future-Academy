@@ -21,10 +21,30 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>Children's Future Academy - Quality Education Since 2000</title>
+        <title>Children's Future Academy -CFA- Quality Education Since 2000</title>
         <meta name="description" content="Children's Future Academy is a Co-educational school in Moradabad providing quality education from Pre-Primary to Class VIII since 2000." />
         <meta name="keywords" content="school, education, Moradabad, Children Future Academy, academics, admissions, co-educational" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+        
+        {/* Favicon */}
+        <link rel="icon" href="/images/logo.png" type="image/png" />
+        <link rel="shortcut icon" href="/images/logo.png" type="image/png" />
+        
+        {/* Open Graph Meta Tags for Google Search & Social Media */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Children's Future Academy -CFA- Quality Education Since 2000" />
+        <meta property="og:description" content="Children's Future Academy is a Co-educational school in Moradabad providing quality education from Pre-Primary to Class VIII since 2000." />
+        <meta property="og:image" content="/images/logo.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:url" content="https://childrenfutureacademy.vercel.app" />
+        <meta property="og:site_name" content="Children's Future Academy" />
+        
+        {/* Twitter Card Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Children's Future Academy -CFA- Quality Education Since 2000" />
+        <meta name="twitter:description" content="Children's Future Academy is a Co-educational school in Moradabad providing quality education from Pre-Primary to Class VIII since 2000." />
+        <meta name="twitter:image" content="/images/logo.png" />
       </head>
       <body className={inter.className}>
         {!isAdminPage && <Navbar />}

@@ -37,7 +37,7 @@ export default function RootLayout({
         <meta property="og:image" content="/images/logo.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:url" content="https://childrenfutureacademy.vercel.app" />
+        <meta property="og:url" content="https://childrenfutureacademy.in" />
         <meta property="og:site_name" content="Children's Future Academy" />
         
         {/* Twitter Card Tags */}

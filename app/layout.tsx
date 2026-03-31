@@ -21,8 +21,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>Children's Future Academy -CFA- Quality Education Since 2000</title>
-        <meta name="description" content="Children's Future Academy is a Co-educational school in Moradabad providing quality education from Pre-Primary to Class VIII since 2000." />
+        <title>Best School in Moradabad | Children's Future Academy</title>
+        <meta name="description" content="Children's Future Academy Moradabad offers quality education from Nursery to Class 8 with modern facilities." />
         <meta name="keywords" content="school, education, Moradabad, Children Future Academy, academics, admissions, co-educational" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         
@@ -32,7 +32,7 @@ export default function RootLayout({
         
         {/* Open Graph Meta Tags for Google Search & Social Media */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Children's Future Academy -CFA- Quality Education Since 2000" />
+        <meta property="og:title" content="Best School in Moradabad | Children's Future Academy" />
         <meta property="og:description" content="Children's Future Academy is a Co-educational school in Moradabad providing quality education from Pre-Primary to Class VIII since 2000." />
         <meta property="og:image" content="/images/logo.png" />
         <meta property="og:image:width" content="1200" />
@@ -42,7 +42,7 @@ export default function RootLayout({
         
         {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Children's Future Academy -CFA- Quality Education Since 2000" />
+        <meta name="twitter:title" content="Best School in Moradabad | Children's Future Academy" />
         <meta name="twitter:description" content="Children's Future Academy is a Co-educational school in Moradabad providing quality education from Pre-Primary to Class VIII since 2000." />
         <meta name="twitter:image" content="/images/logo.png" />
       </head>

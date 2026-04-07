@@ -189,7 +189,7 @@ export default function Footer() {
             <p>
               Developed by{' '}
               <a 
-                href="https://divyanshjainportfolio.vercel.app/" 
+                href="https://www.thejainagency.shop/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-accent hover:text-white transition font-semibold"

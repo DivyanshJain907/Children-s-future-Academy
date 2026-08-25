@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export default function WhatsAppButton() {
   // Format: Remove spaces and add country code 91 for India
-  // 95577 06427 becomes 919557706427
+  // 9557706427 becomes 919557706427
   const phoneNumber = '919557706427';
   const message = 'Hello, I would like to inquire about Children\'s Future Academy.';
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
@@ -37,7 +37,7 @@ export default function WhatsAppButton() {
       
       {/* Phone number badge */}
       <div className="absolute -top-2 -left-2 bg-white text-green-600 text-xs sm:text-sm font-bold px-2 sm:px-3 py-1 rounded-full shadow-lg border-2 border-green-500 whitespace-nowrap">
-        95577 06427
+        9557706427
       </div>
     </Link>
   );

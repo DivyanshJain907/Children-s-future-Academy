@@ -24,7 +24,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="hover:text-green-400 transition flex items-center gap-2"
                 >
-                  <span>95577 06427</span>
+                  <span>9557706427</span>
                   <span className="text-green-400">💬</span>
                 </a>
               </li>

@@ -107,12 +107,12 @@ export default function ContactPage() {
               <h3 className="text-xl font-bold text-gray-800 mb-3">Call Us</h3>
               <div className="text-gray-700">
                 <a 
-                  href="https://wa.me/919557706427?text=Hello%2C%20I%20would%20like%20to%20inquire%20about%20Children%27s%20Future%20Academy." 
+                  href="https://wa.me/919837463488?text=Hello%2C%20I%20would%20like%20to%20inquire%20about%20Children%27s%20Future%20Academy." 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 hover:text-green-600 transition font-semibold"
                 >
-                  <span>📱 95577 06427</span>
+                  <span>📱 98374 63488</span>
                   <span className="text-green-500">💬</span>
                 </a>
                 <p className="text-sm text-gray-500 mt-2">Click to chat on WhatsApp</p>
@@ -282,7 +282,7 @@ export default function ContactPage() {
               </div>
             </div>
             <p className="mt-6 text-center text-gray-600 italic">
-              For urgent matters outside office hours, please call our emergency number: 95577 06427
+              For urgent matters outside office hours, please call our emergency number: 98374 63488
             </p>
           </div>
         </div>

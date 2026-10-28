@@ -19,12 +19,12 @@ export default function Footer() {
               <li className="flex items-center gap-2">
                 <span className="text-accent">📞</span>
                 <a 
-                  href="https://wa.me/919557706427?text=Hello%2C%20I%20would%20like%20to%20inquire%20about%20Children%27s%20Future%20Academy." 
+                  href="https://wa.me/919837463488?text=Hello%2C%20I%20would%20like%20to%20inquire%20about%20Children%27s%20Future%20Academy." 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="hover:text-green-400 transition flex items-center gap-2"
                 >
-                  <span>9557706427</span>
+                  <span>9837463488</span>
                   <span className="text-green-400">💬</span>
                 </a>
               </li>
